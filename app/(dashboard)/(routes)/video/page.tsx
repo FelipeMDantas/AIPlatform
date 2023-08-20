@@ -14,8 +14,10 @@ import { useState } from "react";
 import axios from "axios";
 import { Empty } from "@/components/empty";
 import { Loader } from "@/components/loader";
+import { useProModal } from "@/hooks/use-pro-model";
 
 const VideoPage = () => {
+  const proModal = useProModal();
   const router = useRouter();
   const [video, setVideo] = useState<string>();
 
@@ -37,7 +39,9 @@ const VideoPage = () => {
       setVideo(response.data[0]);
       form.reset();
     } catch (error: any) {
-      console.log(values);
+      if (error?.response?.status === 403) {
+        proModal.onOpen();
+      }
     } finally {
       router.refresh();
     }
@@ -93,7 +97,10 @@ const VideoPage = () => {
           )}
           {!video && !isLoading && <Empty label="No video generated" />}
           {video && (
-            <video controls className="w-full aspect-video mt-8 rounded-lg border bg-black">
+            <video
+              controls
+              className="w-full aspect-video mt-8 rounded-lg border bg-black"
+            >
               <source src={video} />
             </video>
           )}
